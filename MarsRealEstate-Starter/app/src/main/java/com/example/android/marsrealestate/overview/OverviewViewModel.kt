@@ -31,14 +31,20 @@ import retrofit2.Response
 /**
  * The [ViewModel] that is attached to the [OverviewFragment].
  */
+
+enum class MarsApiStatus { LOADING, ERROR, DONE }
 class OverviewViewModel : ViewModel() {
 
-    // The internal MutableLiveData String that stores the most recent response
-    private val _response = MutableLiveData<String>()
+//    // The internal MutableLiveData String that stores the most recent response
+//    private val _response = MutableLiveData<String>()
+//
+//    // The external immutable LiveData for the response String
+//    val response: LiveData<String>
+//        get() = _response
 
-    // The external immutable LiveData for the response String
-    val response: LiveData<String>
-        get() = _response
+    private val _status = MutableLiveData<MarsApiStatus>()
+    val status: LiveData<MarsApiStatus>
+        get() = _status
 
 //    private val _property = MutableLiveData<MarsProperty>()
 //    val property: LiveData<MarsProperty>
@@ -77,15 +83,25 @@ class OverviewViewModel : ViewModel() {
 
     private fun getMarsRealEstateProperties() {
         viewModelScope.launch {
+//            try {
+////               val listResult = MarsApi.retrofitService.getProperties()
+//                _properties.value = MarsApi.retrofitService.getProperties()
+//                _response.value = "Success: Mars propertiesretrieved"
+////                if (listResult.size > 0) {
+////                    _property.value = listResult[0]
+////                }
+//            } catch (e: Exception) {
+//                _response.value = "Failure: ${e.message}"
+//            }
+
+            _status.value = MarsApiStatus.LOADING
             try {
-//               val listResult = MarsApi.retrofitService.getProperties()
                 _properties.value = MarsApi.retrofitService.getProperties()
-                _response.value = "Success: Mars propertiesretrieved"
-//                if (listResult.size > 0) {
-//                    _property.value = listResult[0]
-//                }
+                _status.value = MarsApiStatus.DONE
             } catch (e: Exception) {
-                _response.value = "Failure: ${e.message}"
+                _status.value = MarsApiStatus.ERROR
+                _properties.value = ArrayList()
+
             }
 
 
